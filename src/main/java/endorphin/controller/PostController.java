@@ -81,4 +81,63 @@ public class PostController {
         request.setAttribute("post", post);
         return "post/postContent";
     }
+
+    /**
+     * 保存草稿
+     *
+     * @param post    草稿文章
+     * @param request 请求
+     * @return 返回结果
+     */
+    @RequestMapping(value = "/saveDraft")
+    public String saveDraft(Post post, HttpServletRequest request) {
+        if (post != null) {
+            Timestamp createLoginTime = new Timestamp(System.currentTimeMillis());
+            post.setPostCreateTime(createLoginTime);
+            post.setPostUpdateTime(createLoginTime);
+            postService.saveDraft(post);
+            request.setAttribute("message", "草稿保存成功");
+            return "success";
+        }
+        request.setAttribute("message", "草稿保存失败");
+        return "error";
+    }
+
+    /**
+     * 获取草稿
+     *
+     * @param userName 用户名
+     * @param boardId  板块ID
+     * @param request  请求
+     * @return 返回草稿文章
+     */
+    @RequestMapping(value = "/getDraft")
+    public String getDraft(String userName, int boardId, HttpServletRequest request) {
+        Post draft = postService.getDraftByUserNameAndBoardId(userName, boardId);
+        if (draft != null) {
+            request.setAttribute("draft", draft);
+            return "post/editPost";
+        }
+        request.setAttribute("message", "未找到草稿");
+        return "error";
+    }
+
+    /**
+     * 搜索帖子
+     *
+     * @param keyword 关键词
+     * @param request 请求
+     * @return 返回搜索结果
+     */
+    @RequestMapping(value = "/search")
+    public String searchPosts(String keyword, HttpServletRequest request) {
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            List<Post> posts = postService.searchPostsByKeyword(keyword);
+            request.setAttribute("posts", posts);
+            request.setAttribute("keyword", keyword);
+            return "post/searchResults";
+        }
+        request.setAttribute("message", "请输入搜索关键词");
+        return "error";
+    }
 }

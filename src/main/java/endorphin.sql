@@ -50,6 +50,8 @@ CREATE TABLE IF NOT EXISTS post(
     post_status INT(2) NOT NULL default '0' COMMENT '帖子状态:0:正常 1:锁定',
     post_create_time DATETIME NOT NULL COMMENT '创建时间',
     post_update_time DATETIME COMMENT '更新时间',
+    is_draft TINYINT(1) NOT NULL DEFAULT '0' COMMENT '是否为草稿:0:否 1:是',
+    draft_save_time DATETIME COMMENT '草稿保存时间',
     PRIMARY KEY  (`post_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
 
@@ -62,5 +64,8 @@ CREATE TABLE IF NOT EXISTS reply(
     reply_good_count INT(10) NOT NULL DEFAULT '0' COMMENT '点赞',
     reply_bad_count INT(10) NOT NULL DEFAULT  '0' COMMENT '踩数',
     reply_create_time DATETIME NOT NULL COMMENT '回复时间',
-    PRIMARY KEY  (`reply_id`)
+    parent_reply_id INT(10) DEFAULT NULL COMMENT '父评论ID',
+    is_child_reply TINYINT(1) NOT NULL DEFAULT '0' COMMENT '是否为子评论:0:否 1:是',
+    PRIMARY KEY  (`reply_id`),
+    FOREIGN KEY (parent_reply_id) REFERENCES reply(reply_id)
 ) ENGINE=InnoDB DEFAULT CHARSET utf8 COLLATE utf8_general_ci;

@@ -54,4 +54,21 @@ public class PostServiceImpl implements PostService {
         // 删除post
         postDao.deletePostById(postId);
     }
+
+    @Override
+    public void saveDraft(Post post) {
+        post.setDraft(true);
+        post.setDraftSaveTime(new java.sql.Timestamp(System.currentTimeMillis()));
+        postDao.saveDraft(post);
+    }
+
+    @Override
+    public Post getDraftByUserNameAndBoardId(String userName, int boardId) {
+        return postDao.getDraftByUserNameAndBoardId(userName, boardId);
+    }
+
+    @Override
+    public List<Post> searchPostsByKeyword(String keyword) {
+        return postDao.searchPostsByKeyword(keyword);
+    }
 }
