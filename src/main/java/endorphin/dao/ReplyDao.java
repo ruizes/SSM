@@ -43,4 +43,27 @@ public interface ReplyDao {
      * @return 查找到的回复
      */
     Reply findReplyByReplyId(int replyId);
+
+    /**
+     * 为回复点赞
+     *
+     * @param replyId 回复 id
+     */
+    void likeReply(int replyId);
+
+    /**
+     * 获取所有子评论
+     *
+     * @param parentReplyId 父评论 id
+     * @return 子评论列表
+     */
+    List<Reply> getChildReplies(int parentReplyId);
+
+    /**
+     * 根据关键词搜索回复
+     *
+     * @param keyword 关键词
+     * @return 回复列表
+     */
+    List<Reply> searchRepliesByKeyword(String keyword);
 }

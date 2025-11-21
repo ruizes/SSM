@@ -27,6 +27,8 @@ public class Post {
     private int postStatus;
     private Timestamp postCreateTime;
     private Timestamp postUpdateTime;
+    private boolean isDraft; // 是否为草稿
+    private Timestamp draftSaveTime; // 草稿保存时间
     private List<Reply> replies;
 
     public User getUser() {
@@ -133,6 +135,22 @@ public class Post {
         this.postUpdateTime = postUpdateTime;
     }
 
+    public boolean isDraft() {
+        return isDraft;
+    }
+
+    public void setDraft(boolean draft) {
+        isDraft = draft;
+    }
+
+    public Timestamp getDraftSaveTime() {
+        return draftSaveTime;
+    }
+
+    public void setDraftSaveTime(Timestamp draftSaveTime) {
+        this.draftSaveTime = draftSaveTime;
+    }
+
     public List<Reply> getReplies() {
         return replies;
     }
@@ -155,6 +173,8 @@ public class Post {
                 ", postReplyCount = " + postReplyCount +
                 ", postStatus = " + postStatus +
                 ", postCreateTime = " + postCreateTime +
-                ", postUpdateTime = " + postUpdateTime + '}';
+                ", postUpdateTime = " + postUpdateTime +
+                ", isDraft = " + isDraft +
+                ", draftSaveTime = " + draftSaveTime + '}';
     }
 }

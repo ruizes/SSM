@@ -20,6 +20,8 @@ public class Reply {
     private int replyGoodCount;
     private int replyBadCount;
     private Timestamp replyCreateTime;
+    private int parentReplyId; // 父评论ID，用于二级评论
+    private boolean isChildReply; // 是否为子评论
 
     public int getReplyId() {
         return replyId;
@@ -77,6 +79,22 @@ public class Reply {
         this.replyCreateTime = replyCreateTime;
     }
 
+    public int getParentReplyId() {
+        return parentReplyId;
+    }
+
+    public void setParentReplyId(int parentReplyId) {
+        this.parentReplyId = parentReplyId;
+    }
+
+    public boolean isChildReply() {
+        return isChildReply;
+    }
+
+    public void setChildReply(boolean childReply) {
+        isChildReply = childReply;
+    }
+
     @Override
     public String toString() {
         return "Reply {" +
@@ -86,6 +104,8 @@ public class Reply {
                 ", replyContent = " + replyContent +
                 ", replyGoodCount = " + replyGoodCount +
                 ", replyBadCount = " + replyBadCount +
-                ", replyCreateTime = " + replyCreateTime + "}";
+                ", replyCreateTime = " + replyCreateTime +
+                ", parentReplyId = " + parentReplyId +
+                ", isChildReply = " + isChildReply + "}";
     }
 }

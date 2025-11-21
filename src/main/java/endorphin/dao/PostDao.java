@@ -49,4 +49,28 @@ public interface PostDao {
      * @param post 需要更新的文章
      */
     void updatePostByPost(Post post);
+
+    /**
+     * 保存草稿
+     *
+     * @param post 需要保存的草稿
+     */
+    void saveDraft(Post post);
+
+    /**
+     * 根据用户名和板块ID获取草稿
+     *
+     * @param userName 用户名
+     * @param boardId 板块ID
+     * @return 草稿文章
+     */
+    Post getDraftByUserNameAndBoardId(String userName, int boardId);
+
+    /**
+     * 根据关键词搜索帖子
+     *
+     * @param keyword 关键词
+     * @return 帖子列表
+     */
+    List<Post> searchPostsByKeyword(String keyword);
 }
