@@ -15,6 +15,18 @@
         .card-width {
             min-width: 500px;
         }
+        .draft-status {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .draft-status.success {
+            color: #4CAF50;
+        }
+        .draft-status.error {
+            color: #F44336;
+        }
     </style>
 </head>
 <body>
@@ -115,5 +127,147 @@
         </div>
     </main>
 </div>
+
+<script type="text/javascript">
+    // 草稿保存间隔时间（毫秒）
+    var DRAFT_SAVE_INTERVAL = 30000; // 30秒
+    // 定时器ID
+    var draftTimer = null;
+    // 最后保存时间
+    var lastSaveTime = null;
+    // 是否正在保存
+    var isSaving = false;
+
+    // 页面加载完成后执行
+    $(document).ready(function() {
+        // 加载草稿
+        loadDraft();
+        
+        // 启动定时保存草稿
+        startAutoSave();
+        
+        // 页面卸载前保存草稿
+        $(window).on('beforeunload', function() {
+            saveDraft();
+        });
+    });
+
+    // 加载草稿
+    function loadDraft() {
+        var boardId = $('#postBoardId').val();
+        var userName = $('#postUserName').val();
+        
+        if (!boardId || !userName) {
+            return;
+        }
+        
+        $.ajax({
+            url: '/post/loadDraft',
+            type: 'GET',
+            data: {
+                boardId: boardId,
+                userName: userName
+            },
+            success: function(response) {
+                if (response.success && response.draft) {
+                    $('#postTitle').val(response.draft.postTitle);
+                    $('#postContent').val(response.draft.postContent);
+                    updateDraftStatus('草稿已加载', 'success');
+                }
+            },
+            error: function() {
+                updateDraftStatus('加载草稿失败', 'error');
+            }
+        });
+    }
+
+    // 保存草稿
+    function saveDraft() {
+        if (isSaving) {
+            return;
+        }
+        
+        var boardId = $('#postBoardId').val();
+        var userName = $('#postUserName').val();
+        var postTitle = $('#postTitle').val();
+        var postContent = $('#postContent').val();
+        
+        // 如果没有输入内容，不保存草稿
+        if (!boardId || !userName || (!postTitle && !postContent)) {
+            return;
+        }
+        
+        isSaving = true;
+        
+        $.ajax({
+            url: '/post/saveDraft',
+            type: 'POST',
+            data: {
+                postBoardId: boardId,
+                postUserName: userName,
+                postTitle: postTitle,
+                postContent: postContent
+            },
+            success: function(response) {
+                if (response.success) {
+                    lastSaveTime = new Date();
+                    updateDraftStatus('草稿已保存 (' + formatTime(lastSaveTime) + ')', 'success');
+                } else {
+                    updateDraftStatus('保存草稿失败: ' + response.message, 'error');
+                }
+            },
+            error: function() {
+                updateDraftStatus('保存草稿失败', 'error');
+            },
+            complete: function() {
+                isSaving = false;
+            }
+        });
+    }
+
+    // 启动自动保存
+    function startAutoSave() {
+        if (draftTimer) {
+            clearInterval(draftTimer);
+        }
+        
+        draftTimer = setInterval(function() {
+            saveDraft();
+        }, DRAFT_SAVE_INTERVAL);
+    }
+
+    // 更新草稿状态显示
+    function updateDraftStatus(message, type) {
+        // 移除现有的状态元素
+        $('.draft-status').remove();
+        
+        // 创建新的状态元素
+        var statusElement = $('<div class="draft-status ' + type + '">' + message + '</div>');
+        
+        // 添加到页面中
+        $('.mdl-card__subtitle-text').append(statusElement);
+        
+        // 3秒后自动隐藏成功状态
+        if (type === 'success') {
+            setTimeout(function() {
+                statusElement.fadeOut();
+            }, 3000);
+        }
+    }
+
+    // 格式化时间
+    function formatTime(date) {
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var seconds = date.getSeconds();
+        
+        // 补零
+        hours = hours < 10 ? '0' + hours : hours;
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+        
+        return hours + ':' + minutes + ':' + seconds;
+    }
+</script>
 </body>
 </html>
