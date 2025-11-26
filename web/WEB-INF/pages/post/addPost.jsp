@@ -7,6 +7,134 @@
     <link rel="stylesheet" href="../../resources/css/material.min.css">
     <script type="text/javascript" src="../../resources/js/material.min.js"></script>
     <script type="text/javascript" src="../../resources/js/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript">
+        // 定时保存草稿的时间间隔（毫秒）
+        const SAVE_INTERVAL = 30000; // 30秒
+        let saveTimer = null;
+        let lastSaveTime = 0;
+
+        $(document).ready(function() {
+            // 页面加载时自动加载草稿
+            loadDraft();
+
+            // 监听表单输入变化，启动定时保存
+            $('#postTitle, #postContent').on('input', function() {
+                restartSaveTimer();
+            });
+
+            // 表单提交时清除定时保存
+            $('form').on('submit', function() {
+                clearSaveTimer();
+            });
+        });
+
+        // 重启定时保存计时器
+        function restartSaveTimer() {
+            clearSaveTimer();
+            saveTimer = setTimeout(saveDraft, SAVE_INTERVAL);
+        }
+
+        // 清除定时保存计时器
+        function clearSaveTimer() {
+            if (saveTimer) {
+                clearTimeout(saveTimer);
+                saveTimer = null;
+            }
+        }
+
+        // 保存草稿
+        function saveDraft() {
+            const postTitle = $('#postTitle').val().trim();
+            const postContent = $('#postContent').val().trim();
+            const postBoardId = $('#postBoardId').val();
+            const postUserName = $('#postUserName').val();
+
+            // 如果内容为空，不保存
+            if (!postTitle && !postContent) {
+                return;
+            }
+
+            // 避免频繁保存
+            const now = Date.now();
+            if (now - lastSaveTime < 5000) { // 5秒内只保存一次
+                restartSaveTimer();
+                return;
+            }
+            lastSaveTime = now;
+
+            // 发送保存草稿请求
+            $.ajax({
+                url: '/post/saveDraft',
+                type: 'POST',
+                data: {
+                    postBoardId: postBoardId,
+                    postUserName: postUserName,
+                    postTitle: postTitle,
+                    postContent: postContent
+                },
+                success: function(response) {
+                    if (response.success) {
+                        updateSaveStatus('草稿已保存', 'success');
+                    } else {
+                        updateSaveStatus('草稿保存失败: ' + response.message, 'error');
+                    }
+                },
+                error: function() {
+                    updateSaveStatus('网络错误，草稿保存失败', 'error');
+                },
+                complete: function() {
+                    // 保存完成后，继续定时保存
+                    restartSaveTimer();
+                }
+            });
+        }
+
+        // 加载草稿
+        function loadDraft() {
+            const postBoardId = $('#postBoardId').val();
+            const postUserName = $('#postUserName').val();
+
+            // 发送加载草稿请求
+            $.ajax({
+                url: '/post/loadDraft',
+                type: 'GET',
+                data: {
+                    postBoardId: postBoardId,
+                    postUserName: postUserName
+                },
+                success: function(response) {
+                    if (response.success && response.draft) {
+                        const draft = response.draft;
+                        $('#postTitle').val(draft.postTitle || '');
+                        $('#postContent').val(draft.postContent || '');
+                        if (draft.postTitle || draft.postContent) {
+                            updateSaveStatus('已加载上次保存的草稿', 'success');
+                        }
+                    }
+                },
+                error: function() {
+                    console.log('加载草稿失败');
+                }
+            });
+        }
+
+        // 更新保存状态显示
+        function updateSaveStatus(message, type) {
+            let statusElement = $('.save-status');
+            if (!statusElement.length) {
+                statusElement = $('<div class="save-status"></div>');
+                $('.mdl-card__subtitle-text').append(statusElement);
+            }
+            statusElement.text(message).removeClass('success error').addClass(type);
+
+            // 3秒后隐藏成功状态
+            if (type === 'success') {
+                setTimeout(function() {
+                    statusElement.fadeOut();
+                }, 3000);
+            }
+        }
+    </script>
     <style>
         .center {
             margin-left: auto;
@@ -14,6 +142,18 @@
         }
         .card-width {
             min-width: 500px;
+        }
+        .save-status {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .save-status.success {
+            color: #4CAF50;
+        }
+        .save-status.error {
+            color: #F44336;
         }
     </style>
 </head>
