@@ -59,4 +59,19 @@ public class ReplyServiceImpl implements ReplyService {
         // 删除回复
         replyDao.deleteReplyById(replyId);
     }
+
+    @Override
+    public void updateReplyGoodCount(int replyId, int goodCount) {
+        replyDao.updateReplyGoodCount(replyId, goodCount);
+    }
+
+    @Override
+    public List<Reply> searchReplies(String keyword) {
+        return replyDao.searchReplies(keyword);
+    }
+
+    @Override
+    public List<Reply> listReplyByParentId(int parentId) {
+        return replyDao.listReplyByParentId(parentId);
+    }
 }

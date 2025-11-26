@@ -7,6 +7,87 @@
     <link rel="stylesheet" href="../../resources/css/material.min.css">
     <script type="text/javascript" src="../../resources/js/material.min.js"></script>
     <script type="text/javascript" src="../../resources/js/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript">
+        // 定时保存草稿，每5分钟保存一次
+        setInterval(saveDraft, 300000);
+        
+        function saveDraft() {
+            var postId = $('#postId').val();
+            var postTitle = $('#postTitle').val();
+            var postContent = $('#postContent').val();
+            var postBoardId = $('#postBoardId').val();
+            var postUserName = $('#postUserName').val();
+            
+            // 如果帖子ID为空，说明是新帖子，先创建一个空帖子获取ID
+            if (postId == '') {
+                $.ajax({
+                    url: '/post/addPost',
+                    type: 'POST',
+                    data: {
+                        postBoardId: postBoardId,
+                        postUserName: postUserName,
+                        postTitle: postTitle,
+                        postContent: postContent
+                    },
+                    success: function(data) {
+                        // 从返回的URL中提取帖子ID
+                        var postId = data.split('-')[1];
+                        $('#postId').val(postId);
+                        // 保存草稿
+                        saveDraftContent(postId, postTitle, postContent);
+                    },
+                    error: function() {
+                        alert('创建帖子失败');
+                    }
+                });
+            } else {
+                // 保存草稿
+                saveDraftContent(postId, postTitle, postContent);
+            }
+        }
+        
+        function saveDraftContent(postId, postTitle, postContent) {
+            $.ajax({
+                url: '/post/saveDraft',
+                type: 'POST',
+                data: {
+                    postId: postId,
+                    postTitle: postTitle,
+                    postContent: postContent,
+                    postDraft: postContent
+                },
+                success: function(data) {
+                    if (data == 'success') {
+                        console.log('草稿保存成功');
+                    } else {
+                        console.log('草稿保存失败');
+                    }
+                },
+                error: function() {
+                    console.log('草稿保存失败');
+                }
+            });
+        }
+        
+        // 页面加载时加载草稿
+        $(document).ready(function() {
+            var postId = $('#postId').val();
+            if (postId != '') {
+                $.ajax({
+                    url: '/post/loadDraft-' + postId,
+                    type: 'GET',
+                    success: function(data) {
+                        // 从返回的页面中提取草稿内容
+                        var draft = $(data).find('#postContent').val();
+                        $('#postContent').val(draft);
+                    },
+                    error: function() {
+                        console.log('加载草稿失败');
+                    }
+                });
+            }
+        });
+    </script>
     <style>
         .center {
             margin-left: auto;
@@ -73,6 +154,16 @@
                                                 <input class="mdl-textfield__input" name="postUserName" id="postUserName"
                                                        readonly value="<%=request.getParameter("userName")%>"/>
                                                 <label class="mdl-textfield__label" for="postUserName"></label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr style="display: none;">
+                                        <td>帖子ID:</td>
+                                        <td>
+                                            <div class="mdl-textfield mdl-js-textfield">
+                                                <input class="mdl-textfield__input" name="postId" id="postId"
+                                                       value="<%=request.getParameter("postId") != null ? request.getParameter("postId") : ""%>"/>
+                                                <label class="mdl-textfield__label" for="postId"></label>
                                             </div>
                                         </td>
                                     </tr>

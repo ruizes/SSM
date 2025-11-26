@@ -49,4 +49,27 @@ public interface PostDao {
      * @param post 需要更新的文章
      */
     void updatePostByPost(Post post);
+
+    /**
+     * 保存文章草稿
+     *
+     * @param post 需要保存草稿的文章
+     */
+    void savePostDraft(Post post);
+
+    /**
+     * 通过文章id加载草稿
+     *
+     * @param postId 文章id
+     * @return 文章草稿内容
+     */
+    String loadPostDraft(int postId);
+
+    /**
+     * 搜索文章
+     *
+     * @param keyword 搜索关键词
+     * @return 文章列表
+     */
+    List<Post> searchPosts(String keyword);
 }

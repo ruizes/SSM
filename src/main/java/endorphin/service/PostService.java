@@ -40,4 +40,27 @@ public interface PostService {
      * @param postId 文章 id
      */
     void deletePost(int postId);
+
+    /**
+     * 保存文章草稿
+     *
+     * @param post 文章实例
+     */
+    void savePostDraft(Post post);
+
+    /**
+     * 加载文章草稿
+     *
+     * @param postId 文章 id
+     * @return 草稿内容
+     */
+    String loadPostDraft(int postId);
+
+    /**
+     * 搜索文章
+     *
+     * @param keyword 搜索关键词
+     * @return 文章列表
+     */
+    List<Post> searchPosts(String keyword);
 }
