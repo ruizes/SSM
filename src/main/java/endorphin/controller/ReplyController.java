@@ -40,4 +40,32 @@ public class ReplyController {
         replyService.addReply(reply);
         return "redirect:/post/postContent-" + reply.getReplyPostId();
     }
+
+    /**
+     * 更新回复点赞数
+     *
+     * @param replyId  回复 id
+     * @param goodCount 点赞数
+     * @return 返回结果
+     */
+    @RequestMapping(value = "/updateGoodCount")
+    public String updateReplyGoodCount(int replyId, int goodCount) {
+        replyService.updateReplyGoodCount(replyId, goodCount);
+        return "success";
+    }
+
+    /**
+     * 搜索回复
+     *
+     * @param keyword 搜索关键词
+     * @param request 请求
+     * @return 返回搜索结果页面
+     */
+    @RequestMapping(value = "/search")
+    public String searchReplies(String keyword, HttpServletRequest request) {
+        List<Reply> replies = replyService.searchReplies(keyword);
+        request.setAttribute("replies", replies);
+        request.setAttribute("keyword", keyword);
+        return "reply/searchResult";
+    }
 }

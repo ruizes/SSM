@@ -1,6 +1,7 @@
 package endorphin.domain;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * Reply 回复实体类
@@ -15,11 +16,13 @@ public class Reply {
      */
     private int replyId;
     private int replyPostId;
+    private int replyParentId;
     private String replyUserName;
     private String replyContent;
     private int replyGoodCount;
     private int replyBadCount;
     private Timestamp replyCreateTime;
+    private List<Reply> childReplies;
 
     public int getReplyId() {
         return replyId;
@@ -35,6 +38,22 @@ public class Reply {
 
     public void setReplyPostId(int replyPostId) {
         this.replyPostId = replyPostId;
+    }
+
+    public int getReplyParentId() {
+        return replyParentId;
+    }
+
+    public void setReplyParentId(int replyParentId) {
+        this.replyParentId = replyParentId;
+    }
+
+    public List<Reply> getChildReplies() {
+        return childReplies;
+    }
+
+    public void setChildReplies(List<Reply> childReplies) {
+        this.childReplies = childReplies;
     }
 
     public String getReplyUserName() {
@@ -82,6 +101,7 @@ public class Reply {
         return "Reply {" +
                 "replyId = " + replyId +
                 ", replyPostId = " + replyPostId +
+                ", replyParentId = " + replyParentId +
                 ", replyUserName = " + replyUserName +
                 ", replyContent = " + replyContent +
                 ", replyGoodCount = " + replyGoodCount +

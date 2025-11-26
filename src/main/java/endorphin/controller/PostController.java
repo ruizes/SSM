@@ -81,4 +81,50 @@ public class PostController {
         request.setAttribute("post", post);
         return "post/postContent";
     }
+
+    /**
+     * 保存帖子草稿
+     *
+     * @param post 帖子实例
+     * @return 返回结果
+     */
+    @RequestMapping(value = "/saveDraft")
+    public String saveDraft(Post post) {
+        if (post != null) {
+            Timestamp draftUpdateTime = new Timestamp(System.currentTimeMillis());
+            post.setPostDraftUpdateTime(draftUpdateTime);
+            postService.savePostDraft(post);
+            return "success";
+        }
+        return "error";
+    }
+
+    /**
+     * 加载帖子草稿
+     *
+     * @param postId  帖子 id
+     * @param request 请求
+     * @return 返回草稿内容
+     */
+    @RequestMapping(value = "/loadDraft-{postId}")
+    public String loadDraft(@PathVariable int postId, HttpServletRequest request) {
+        String draft = postService.loadPostDraft(postId);
+        request.setAttribute("draft", draft);
+        return "post/editPost";
+    }
+
+    /**
+     * 搜索帖子
+     *
+     * @param keyword 搜索关键词
+     * @param request 请求
+     * @return 返回搜索结果页面
+     */
+    @RequestMapping(value = "/search")
+    public String searchPosts(String keyword, HttpServletRequest request) {
+        List<Post> posts = postService.searchPosts(keyword);
+        request.setAttribute("posts", posts);
+        request.setAttribute("keyword", keyword);
+        return "post/searchResult";
+    }
 }

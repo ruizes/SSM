@@ -54,4 +54,19 @@ public class PostServiceImpl implements PostService {
         // 删除post
         postDao.deletePostById(postId);
     }
+
+    @Override
+    public void savePostDraft(Post post) {
+        postDao.savePostDraft(post);
+    }
+
+    @Override
+    public String loadPostDraft(int postId) {
+        return postDao.loadPostDraft(postId);
+    }
+
+    @Override
+    public List<Post> searchPosts(String keyword) {
+        return postDao.searchPosts(keyword);
+    }
 }
