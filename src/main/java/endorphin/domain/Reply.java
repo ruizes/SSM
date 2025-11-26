@@ -15,6 +15,7 @@ public class Reply {
      */
     private int replyId;
     private int replyPostId;
+    private int replyParentId;
     private String replyUserName;
     private String replyContent;
     private int replyGoodCount;
@@ -35,6 +36,14 @@ public class Reply {
 
     public void setReplyPostId(int replyPostId) {
         this.replyPostId = replyPostId;
+    }
+
+    public int getReplyParentId() {
+        return replyParentId;
+    }
+
+    public void setReplyParentId(int replyParentId) {
+        this.replyParentId = replyParentId;
     }
 
     public String getReplyUserName() {
@@ -82,6 +91,7 @@ public class Reply {
         return "Reply {" +
                 "replyId = " + replyId +
                 ", replyPostId = " + replyPostId +
+                ", replyParentId = " + replyParentId +
                 ", replyUserName = " + replyUserName +
                 ", replyContent = " + replyContent +
                 ", replyGoodCount = " + replyGoodCount +
