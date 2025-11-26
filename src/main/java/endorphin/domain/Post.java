@@ -27,6 +27,8 @@ public class Post {
     private int postStatus;
     private Timestamp postCreateTime;
     private Timestamp postUpdateTime;
+    private String postDraft;
+    private Timestamp postDraftUpdateTime;
     private List<Reply> replies;
 
     public User getUser() {
@@ -131,6 +133,22 @@ public class Post {
 
     public void setPostUpdateTime(Timestamp postUpdateTime) {
         this.postUpdateTime = postUpdateTime;
+    }
+
+    public String getPostDraft() {
+        return postDraft;
+    }
+
+    public void setPostDraft(String postDraft) {
+        this.postDraft = postDraft;
+    }
+
+    public Timestamp getPostDraftUpdateTime() {
+        return postDraftUpdateTime;
+    }
+
+    public void setPostDraftUpdateTime(Timestamp postDraftUpdateTime) {
+        this.postDraftUpdateTime = postDraftUpdateTime;
     }
 
     public List<Reply> getReplies() {

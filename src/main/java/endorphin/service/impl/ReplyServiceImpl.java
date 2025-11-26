@@ -59,4 +59,24 @@ public class ReplyServiceImpl implements ReplyService {
         // 删除回复
         replyDao.deleteReplyById(replyId);
     }
+
+    @Override
+    public void likeReply(int replyId) {
+        replyDao.likeReply(replyId);
+    }
+
+    @Override
+    public void dislikeReply(int replyId) {
+        replyDao.dislikeReply(replyId);
+    }
+
+    @Override
+    public List<Reply> searchRepliesByKeyword(String keyword) {
+        return replyDao.searchRepliesByKeyword(keyword);
+    }
+
+    @Override
+    public List<Reply> listChildRepliesByReplyId(int replyId) {
+        return replyDao.listChildRepliesByReplyId(replyId);
+    }
 }

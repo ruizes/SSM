@@ -9,10 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * PostController
@@ -80,5 +83,73 @@ public class PostController {
 
         request.setAttribute("post", post);
         return "post/postContent";
+    }
+
+    /**
+     * 保存帖子草稿
+     *
+     * @param post    帖子对象
+     * @param request 请求
+     * @return 返回JSON结果
+     */
+    @RequestMapping(value = "/saveDraft")
+    @ResponseBody
+    public Map<String, Object> saveDraft(Post post, HttpServletRequest request) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            post.setPostDraftUpdateTime(new Timestamp(System.currentTimeMillis()));
+            postService.savePostDraft(post);
+            result.put("success", true);
+            result.put("message", "草稿保存成功");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "草稿保存失败: " + e.getMessage());
+        }
+        return result;
+    }
+
+    /**
+     * 加载帖子草稿
+     *
+     * @param postId  帖子 id
+     * @param request 请求
+     * @return 返回JSON结果
+     */
+    @RequestMapping(value = "/loadDraft-{postId}")
+    @ResponseBody
+    public Map<String, Object> loadDraft(@PathVariable int postId, HttpServletRequest request) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            Post post = postService.loadPostDraft(postId);
+            if (post != null && post.getPostDraft() != null) {
+                result.put("success", true);
+                result.put("draft", post.getPostDraft());
+            } else {
+                result.put("success", false);
+                result.put("message", "没有找到草稿");
+            }
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "草稿加载失败: " + e.getMessage());
+        }
+        return result;
+    }
+
+    /**
+     * 搜索帖子
+     *
+     * @param keyword 搜索关键词
+     * @param request 请求
+     * @return 返回搜索结果页面
+     */
+    @RequestMapping(value = "/search")
+    public String searchPosts(String keyword, HttpServletRequest request) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return "redirect:/main";
+        }
+        List<Post> posts = postService.searchPostsByKeyword(keyword);
+        request.setAttribute("posts", posts);
+        request.setAttribute("keyword", keyword);
+        return "post/searchResult";
     }
 }
